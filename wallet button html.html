@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Envoyer un fichier sur IPFS</title>
+</head>
+<body>
+  <input type="file" id="fileUploadInput">
+  <button id="sendFileBtn">Envoyer sur IPFS</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/ipfs-core/dist/index.min.js"></script>
+  <script>
+    import * as IPFS from 'ipfs-core';
+    const node = await IPFS.create();// Crée une nouvelle instance IPFS
+    const sendFileBtn = document.getElementById('sendFileBtn')
+    const fileUploadInput = document.getElementById('fileUploadInput')
+
+    sendFileBtn.addEventListener('click', async () => {
+      const file = fileUploadInput.files[0] // Obtient le fichier sélectionné
+      const fileBuffer = await file.arrayBuffer() // Lit le contenu du fichier en tant que tableau d'octets
+
+      const ipfsResult = await node.add(fileBuffer) // Ajoute le fichier à IPFS
+      const ipfsUrl = `https://ipfs.io/ipfs/${ipfsResult.cid.toString()}` // Génère une URL publique pour le fichier ajouté
+      console.log("Added file:", fileBuffer.path, fileBuffer.cid);
+      alert(`Le fichier a été ajouté à IPFS avec le CID suivant :\n\n${ipfsResult.cid.toString()}\n\nL'URL publique pour accéder au fichier est la suivante :\n\n${ipfsUrl}`)
+    })
+  </script>
+</body>
+</html>
