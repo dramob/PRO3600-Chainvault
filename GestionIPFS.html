@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Page utilisateur</title>
+</head>
+<body>
+  <h1>Bienvenue sur votre page utilisateur</h1>
+  <h2>Liste de vos documents</h2>
+  <ul id="documentList"></ul>
+  <button onclick="uploadDocument()">Uploader un document</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/ipfs-core@0.14.3/dist/index.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ipfs-http-client@53.0.2/dist/index.min.js"></script>
+  <script>
+    // Tableau à remplacer avec les documents que l'utilisateurs aura fourni 
+    const documents = [
+      { name: 'Document 1', date: '01/01/2022', cid: 'QmXvHc9R1RJjKquBwW8m1txCgjcVpB3rK3Dp8yvfgu9bV5', image: 'https://via.placeholder.com/150' },
+      { name: 'Document 2', date: '02/01/2022', cid: 'QmQX9gkfsCctFkqxZBpCZCEGz87iGg1bJhMEy8YGCDYjK4', image: 'https://via.placeholder.com/150' },
+      { name: 'Document 3', date: '03/01/2022', cid: 'QmXf1Kj4MbJm4P3qzo37ZTjTtT1JtR2hdtTNKjPhy2Y9vc', image: 'https://via.placeholder.com/150' },
+      { name: 'Document 4', date: '04/01/2022', cid: 'Qma7Vj8WpTGsz7WywYQUz2f7fdx8pqj1c7ZnPfFZ1HFrKu', image: 'https://via.placeholder.com/150' }
+    ];
+
+    // Afficher la liste des documents
+    const documentList = document.getElementById('documentList');
+    documents.forEach((document) => {
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `
+        <h3>${document.name} (${document.date})</h3>
+        <a href="https://ipfs.infura.io/ipfs/${document.cid}">Voir sur IPFS</a>
+        <br>
+        <img src="${document.image}" alt="Image associée à ${document.name}">
+      `;
+      documentList.appendChild(listItem);
+    });
+
+    async function uploadDocument() {
+      // Sélectionner le fichier à uploader
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = '.pdf,.doc,.docx,.txt,.jpg,.jpeg,.png';
+      fileInput.addEventListener('change', async (event) => {
+        // Obtenir le contenu du fichier
+        const fileContent = event.target.files[0];
+
+        // Création de l'instance IPFS
+        const ipfs = await Ipfs.create();
+
+        // Ajout du fichier à IPFS
+        const filesAdded = await ipfs.add({ path: fileContent.name, content: fileContent });
+
+        // Ajouter le nouveau document à la liste
+        const newDocument = { name: fileContent.name, date: new Date().toLocaleDateString() };
+        documents.push(newDocument);
+
+        // Obtenir l'URL de l'objet IPFS ajouté à Infura
+        const ipfsUrl = `https://ipfs.infura.io/ipfs/${filesAdded.cid.toString()}`;
+
+        // Ajouter le nouveau document à la liste avec l'image associée
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <h3>${newDocument.name} (${newDocument.date})</h3>
+            <a href="${ipfsUrl}">Voir sur IPFS</a>
+            <br>
+            <img src="https://via.placeholder.com/150" alt="Image associée à ${newDocument.name}">
+        `;
+        documentList.appendChild(listItem);
+
+        // Fermer l'instance IPFS
+        await ipfs.stop();
+                });
+                fileInput.click();
+            }
+
+        // Créer une instance de l'API IPFS avec Infura
+        const infuraApiKey = 'CLE_INFURA_A_METTRE';
+        const infuraUrl = `https://ipfs.infura.io/api/v0`;
+        const ipfs = infura.create(infuraApiKey, { url: infuraUrl });
+    </script>
+</body>
+</html>
+
