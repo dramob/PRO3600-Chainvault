@@ -8,20 +8,30 @@
   <input type="file" id="fileUploadInput">
   <button id="sendFileBtn">Envoyer sur IPFS</button>
 
+  <!-- Importation de la bibliothèque IPFS -->
   <script src="https://cdn.jsdelivr.net/npm/ipfs-core/dist/index.min.js"></script>
   <script>
+    // Création d'une instance IPFS
     import * as IPFS from 'ipfs-core';
-    const node = await IPFS.create();// Crée une nouvelle instance IPFS
+    const node = await IPFS.create();
+
+    // Récupération des éléments HTML nécessaires pour le formulaire
     const sendFileBtn = document.getElementById('sendFileBtn')
     const fileUploadInput = document.getElementById('fileUploadInput')
 
+    // Ajout d'un écouteur d'événement pour le bouton Envoyer sur IPFS
     sendFileBtn.addEventListener('click', async () => {
-      const file = fileUploadInput.files[0] // Obtient le fichier sélectionné
-      const fileBuffer = await file.arrayBuffer() // Lit le contenu du fichier en tant que tableau d'octets
+      // Récupération du fichier sélectionné dans le formulaire
+      const file = fileUploadInput.files[0]
+      // Lecture du contenu du fichier en tant que tableau d'octets
+      const fileBuffer = await file.arrayBuffer()
 
-      const ipfsResult = await node.add(fileBuffer) // Ajoute le fichier à IPFS
-      const ipfsUrl = `https://ipfs.io/ipfs/${ipfsResult.cid.toString()}` // Génère une URL publique pour le fichier ajouté
+      // Ajout du fichier à IPFS
+      const ipfsResult = await node.add(fileBuffer)
+      // Génération de l'URL publique pour le fichier ajouté
+      const ipfsUrl = `https://ipfs.io/ipfs/${ipfsResult.cid.toString()}`
       console.log("Added file:", fileBuffer.path, fileBuffer.cid);
+      // Affichage d'une alerte avec le CID du fichier ajouté et son URL publique
       alert(`Le fichier a été ajouté à IPFS avec le CID suivant :\n\n${ipfsResult.cid.toString()}\n\nL'URL publique pour accéder au fichier est la suivante :\n\n${ipfsUrl}`)
     })
   </script>
