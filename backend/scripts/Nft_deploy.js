@@ -1,4 +1,4 @@
-Const hre = require("hardhat");
+const hre = require("hardhat");
 
 async function main() {
   // Obtention de l'usine de contrat NFT
