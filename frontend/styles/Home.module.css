@@ -1,0 +1,36 @@
+/* Home.module.css */
+.container {
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+  }
+  
+  .main {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	width: 100%;
+  }
+  
+  .content {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 2em;
+	font-family: Arial, sans-serif;
+	line-height: 1.6;
+  }
+  
+  .title {
+	font-size: 2em;
+	color: #333;
+	margin-bottom: 1em;
+  }
+  
+  .intro {
+	font-size: 1.2em;
+	margin-bottom: 1em;
+  }
+  

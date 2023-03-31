@@ -1,0 +1,25 @@
+/* APropos.module.css */
+.content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2em;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+  }
+  
+  .title {
+    font-size: 2em;
+    color: #333;
+    margin-bottom: 1em;
+  }
+  
+  .intro {
+    font-size: 1.2em;
+    margin-bottom: 1em;
+  }
+  
+  .blockchain {
+    font-size: 1.1em;
+    text-align: justify;
+  }
+  
