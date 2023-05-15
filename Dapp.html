@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Création de NFT</title>
+    <script src="https://cdn.jsdelivr.net/npm/web3/dist/web3.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ipfs-http-client/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@openzeppelin/contracts@4.3.2/build/contracts/ERC721PresetMinterPauserAutoId.json"></script>
+    <script>
+      window.addEventListener('load', async () => {
+        if (typeof window.ethereum !== 'undefined') {
+          await window.ethereum.enable();
+          window.web3 = new Web3(window.ethereum);
+        } else if (typeof window.web3 !== 'undefined') {
+          window.web3 = new Web3(window.web3.currentProvider);
+        } else {
+          console.log('Metamask non détecté');
+        }
+
+        const contractAddress = '0x2b5C96c019a08273f60d3CC83B301D8536B92198'; // Adresse du contrat
+        const contractABI = await (await fetch('https://cdn.jsdelivr.net/npm/@openzeppelin/contracts@4.3.2/build/contracts/ERC721PresetMinterPauserAutoId.json')).json().abi;
+        const contract = new web3.eth.Contract(contractABI, contractAddress); // Création d'une instance du contrat
+
+        const apiKey = '2PeqPoHloUmPfhnEboqKfaaHnkA'; // Clé API IPFS
+        const ipfs = IpfsHttpClient.create({ host: 'ipfs.infura.io', port: '5001', protocol: 'https', apiPath: '/api/v0/', headers: { authorization: `Bearer ${apiKey}` } });
+
+        let buffer;
+        let hashedIPFSHash;
+
+        function captureFile(event) {
+          event.preventDefault()
+          const file = event.target.files[0]
+          const reader = new FileReader()
+          reader.readAsArrayBuffer(file)
+          reader.onloadend = () => {
+            buffer = new Uint8Array(reader.result)
+            console.log('buffer', buffer)
+          }
+        }
+
+        function onSubmit(event) {
+          event.preventDefault()
+          ipfs.add(buffer, (error, result) => {
+            if (error) {
+              console.error(error)
+              return
+            }
+            console.log('ipfsHash', result[0].hash)
+            hashedIPFSHash = web3.utils.keccak256(result[0].hash);
+          })
+        }
+
+        async function mintNFT() {
+          const accounts = await web3.eth.getAccounts();
+          const tokenId = hashedIPFSHash;
+          const tokenURI = `https://ipfs.infura.io/ipfs/${result[0].hash}`;
+          await contract.methods.mint(accounts[0], tokenId, tokenURI).send({ from: accounts[0] });
+        }
+
+        const fileInput = document.getElementById('fileInput')
+        fileInput.addEventListener('change', captureFile)
+
+        const submitButton = document.getElementById('submitButton')
+        submitButton.addEventListener('click', onSubmit)
+
+        const mintButton = document.getElementById('mintButton')
+        mintButton.addEventListener('click', mintNFT)
+      });
+    </script>
+  </head>
+  <body>
+    <h1>BlockVault</h1>
+    <input type="file" id="fileInput">
+    <button id="submitButton">Envoyer sur IPFS</button>
+    <button id="mintButton">Mint NFT</button>
+  </body>
+</html>
+
